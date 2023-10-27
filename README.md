@@ -3,14 +3,12 @@ Mocha-StepDefinition-Generator
 # Mocha Step Definition Generator
 
 ## Introduction
-Gihub link: https://github.com/Elie-A/Mocha-StepDefinition-Generator
-
 This script is a Mocha step definition generator for BDD (Behavior-Driven Development) testing frameworks. They are designed to parse Gherkin-style feature files and generate Mocha step definitions for test automation using JavaScript. The generated step definitions can be used to create automated test scenarios based on the Given-When-Then syntax.
 
 The script reads a feature file (usually with a `.feature` extension) and generate Mocha step definitions in a JavaScript test file (usually with a `.test.js` extension). They support scenarios, scenario outlines, and background steps commonly used in Gherkin feature files.
 
 ## Script
-1. `generateScenarios.js`, located under generate_scenarios folder, designed to generate Mocha step definitions by creating:
+1. `parser.js`, located under parser folder, designed to generate Mocha step definitions by creating:
 - Unique describe block for the feature file
 - It blocks for background, scenario, and scenario outline
 - JSON object for bacgkround and scenarios (all parameterized data, integers and strings)
@@ -121,4 +119,4 @@ describe('Feature:  Test Feature', function () {
 ```
 ## Suggestions, Bugs
 To report any bugs or provide suggestions please open an issue
-
+Gihub link: https://github.com/Elie-A/Mocha-StepDefinition-Generator
