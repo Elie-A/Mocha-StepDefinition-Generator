@@ -1,6 +1,6 @@
 {
   "name": "mocha-stepdefinition-generator",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Mocha-StepDefinition-Generator\r # Mocha Step Definition Generator",
   "main": "index.js",
   "scripts": {
@@ -13,12 +13,17 @@
     "type": "git",
     "url": "git+https://github.com/Elie-A/Mocha-StepDefinition-Generator.git"
   },
-  "keywords": ["gherkin", "mocha", "stepdefinition"],
+  "keywords": [
+    "gherkin",
+    "mocha",
+    "stepdefinition"
+  ],
   "author": "Elie-Abdallah",
   "license": "MIT",
   "dependencies": {
     "fs": "^0.0.1-security",
     "mocha": "^10.2.0",
+    "path": "^0.12.7",
     "prettier": "^3.0.3"
   },
   "bugs": {

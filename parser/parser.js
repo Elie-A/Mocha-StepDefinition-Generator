@@ -1,5 +1,5 @@
-const fs = require('fs');
-const readline = require('readline');
+const fs = require('fs').promises;
+const path = require('path');
 const prettier = require('prettier');
 
 const FeatureModel = require('../models/featureModel.js');
@@ -18,6 +18,7 @@ let isInsideBackgroundBlock, isInsideScenarioBlock, isInsideScenarioOutlineBlock
 let readHeaders = false;
 let tempData = [];
 let dataToWrite = [];
+let outputString = '';
 
 const featurePattern = /^Feature:(.+)/;
 const backgroundPattern = /^Background:(.+)/;
@@ -27,38 +28,66 @@ const examplesPattern = /^Examples(:)?(.+)?/;
 const stepPattern = /^(Given|When|Then|And|But|\*) (.+)$/;
 const paramPattern = /"([^"]+)"|\b\d+\b/g;
 
-let outputString = ''
+async function parseFeatureFilesInDirectory(directoryPath) {
+    try {
+        const stats = await fs.stat(directoryPath);
 
-/* Function to parse feature file */
-function parseFeature(feature_path) {
+        if (!stats.isDirectory()) {
+            throw new Error('The specified path is not a directory.');
+        }
+
+        const files = await fs.readdir(directoryPath);
+
+        if (files.length === 0) {
+            throw new Error('No files with .feature extension found in the directory.');
+        }
+
+        const featureFiles = files.filter(file => file.endsWith('.feature'));
+
+        if (featureFiles.length === 0) {
+            throw new Error('No .feature files found in the directory.');
+        }
+
+        for (const file of featureFiles) {
+            const filePath = path.join(directoryPath, file);
+            dataToWrite = [];
+            await parseFeature(filePath);
+        }
+    } catch (error) {
+        console.error('\x1b[31m%s\x1b[0m', 'Error reading directory:', error.message);
+    }
+}
+
+async function parseFeature(feature_path) {
+    const stats = await fs.stat(feature_path);
+
+    if (!stats.isFile()) {
+        throw new Error('The specified path is not a file.');
+    }
+
     const output_path = feature_path.replace('.feature', '.test.js');
-    const fileStream = fs.createReadStream(feature_path, 'utf8');
+    const fileStream = await fs.readFile(feature_path, 'utf8'); // Read the file content
 
-    const reader = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity,
-    });
-
-    /* Process each line of the feature file */
-    reader.on('line', (line) => {
+    const lines = fileStream.split('\n');
+    for (const line of lines) {
         parseFeatureLine(line);
-    });
+    }
 
-    reader.on('close', () => {
-        
-        if (!background_model.isEmpty()) {
-            dataToWrite.push(background_model);
-        }
-        if (!scenario_model.isEmpty()) {
-            dataToWrite.push(scenario_model);
-        }
-        if (!scenario_outline_model.isEmpty() && scenario_outline_model.scenario_outline_headers.length > 0 && scenario_outline_model.scenario_outline_data.length > 0) {
-            dataToWrite.push(scenario_outline_model);
-        }
-        printDataToConsole(dataToWrite);
-        console.log('\x1b[32m%s\x1b[0m', `File: ${feature_path} parsing finished.`);
-        writeDataToFile(dataToWrite, output_path);
-    });
+    if (!background_model.isEmpty()) {
+        dataToWrite.push(background_model);
+    }
+    if (!scenario_model.isEmpty()) {
+        dataToWrite.push(scenario_model);
+    }
+    if (!scenario_outline_model.isEmpty() && scenario_outline_model.scenario_outline_headers.length > 0 && scenario_outline_model.scenario_outline_data.length > 0) {
+        dataToWrite.push(scenario_outline_model);
+    }
+
+    await printDataToConsole(dataToWrite);
+    console.log('\x1b[32m%s\x1b[0m', `File: ${feature_path} parsing finished.`);
+    await writeDataToFile(dataToWrite, output_path);
+    console.log('\x1b[32m%s\x1b[0m', `Output File: ${output_path}`);
+    await resetData();
 }
 
 function parseFeatureLine(line) {
@@ -227,7 +256,7 @@ function generateScenarioOutlineData(modelInstance) {
     return scenarioOutlineData;
 }
 
-function printDataToConsole(dataToWrite){
+async function printDataToConsole(dataToWrite){
     if (dataToWrite.length > 0) {
         for (const model of dataToWrite) {
             if (model instanceof FeatureModel) {
@@ -258,8 +287,8 @@ function printDataToConsole(dataToWrite){
     console.log('\x1b[33m%s\x1b[0m', closeBlock());
 }
 
-function writeDataToFile(dataToWrite, output_path){
-    if (dataToWrite.length > 0) {
+async function writeDataToFile(dataToWrite, output_path){
+        if (dataToWrite.length > 0) {
         outputString += importsBlock();
         for (const model of dataToWrite) {
             if (model instanceof FeatureModel) {
@@ -304,4 +333,14 @@ function writeDataToFile(dataToWrite, output_path){
     });
 }
 
-module.exports = { parseFeature };
+async function resetData(){
+    dataToWrite = [];
+    tempData = [];
+    outputString = '';
+    feature_model = new FeatureModel();
+    background_model = new BackgroundModel();
+    scenario_model = new ScenarioModel();
+    scenario_outline_model = new ScenarioOutlineModel();
+}
+
+module.exports = { parseFeature, parseFeatureFilesInDirectory };
