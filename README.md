@@ -1,49 +1,56 @@
 # Mocha-StepDefinition-Generator
+
 This script is a Mocha step definition generator for BDD (Behavior-Driven Development) testing frameworks. They are designed to parse Gherkin-style feature files and generate Mocha step definitions for test automation using JavaScript. The generated step definitions can be used to create automated test scenarios based on the Given-When-Then syntax.
 
 The script reads a feature file (usually with a `.feature` extension) and generate Mocha step definitions in a JavaScript test file (usually with a `.test.js` extension). They support scenarios, scenario outlines, and background steps commonly used in Gherkin feature files.
 
 ## Script
+
 The script functionalities are:
+
 1. Parse single feature file
 2. Parse a directory - mainly only `.feature` files in that particular directory
 3. Generate the below:
-    * Unique describe block for the feature file
-    * It blocks for background, scenario, and scenario outline
-    * JSON object for bacgkround and scenarios (all parameterized data, integers and strings)
-    * Array of JSON objects for scenario outline (all data within the Examples section)
 
-2. 
+   - Unique describe block for the feature file
+   - It blocks for background, scenario, and scenario outline
+   - JSON object for bacgkround and scenarios (all parameterized data, integers and strings)
+   - Array of JSON objects for scenario outline (all data within the Examples section)
+
 
 ## Code Execution Guide
 
 To use the scripts to generate Mocha step definitions from a Gherkin-style feature file, follow these steps:
+
 1. Make sure to install node from here: https://nodejs.org/en/download
 2. Installation:
-    * Install the dependency with this command:
-    ``npm i mocha-stepdefinition-generator"``
-    * Import it using:
-    ``const msg = require('mocha-stepdefinition-generator');``
+   - Install the dependency with this command:
+     `npm i mocha-stepdefinition-generator"`
+   - Import it using:
+     `const msg = require('mocha-stepdefinition-generator');`
 3. Single feature file execution steps:
-    * Define an input file (Your feature file):
-    ``const input_file = 'sample.feature';``
-    * Call the parser function:
-    ``msg.parseFeature(input_file);``
+   - Define an input file (Your feature file):
+     `const input_file = 'sample.feature';`
+   - Call the parser function:
+     `msg.parseFeature(input_file);`
 4. Feature files directory execution steps:
-    * Define an input directory (Your feature files directory):
-    ``const input_directory = './examples copy';``
-    * Call the parser function:
-    ``msg.parseFeatureFilesInDirectory(input_directory);``    
 
-4. Generated Output: The script will parse the feature file and generate Mocha step definitions based on the Scenarios. The generated step definitions will be written to the specified output file.
-    * The generated test file will have a single describe block for the entire feature file
-    * Individual it blocks for each background, scenario and scenario outline. Withing those  it blocks, parametrized data will be added as JSON Object for backgrounds, and scenarios; whereas for scenario outlines, the data will be saved as an array og JSON Objects.
-    * The steps will be added as comments in the blocks 
+   - Define an input directory (Your feature files directory):
+     `const input_directory = './examples copy';`
+   - Call the parser function:
+     `msg.parseFeatureFilesInDirectory(input_directory);`
+
+5. Generated Output: The script will parse the feature file and generate Mocha step definitions based on the Scenarios. The generated step definitions will be written to the specified output file.
+   - The generated test file will have a single describe block for the entire feature file
+   - Individual it blocks for each background, scenario and scenario outline. Withing those it blocks, parametrized data will be added as JSON Object for backgrounds, and scenarios; whereas for scenario outlines, the data will be saved as an array og JSON Objects.
+   - The steps will be added as comments in the blocks
 
 ## Examples
+
 1. Single feature file execution
 
 ```feature
+
 Feature: Test Feature
 # comment line
     Background: Valid user session
@@ -68,6 +75,7 @@ Feature: Test Feature
         And user validates the amount
         * user validates the 10 percent taxes
         * user pays the requested amount
+
 ```
 
 ```js
@@ -126,13 +134,16 @@ describe('Feature:  Test Feature', function () {
 });
 
 ```
+
 2. Feature file directory execution
-    * Directory name: examples copy
-    * Directory feature files: 
-      - ``Feature 01.feature`` 
-      - ``Feature 02.feature``
-    * ``Feature 01.feature`` content
-    ```feature
+   - Directory name: examples copy
+   - Directory feature files:
+     - `Feature 01.feature`
+     - `Feature 02.feature`
+
+``Feature 01`` content
+```feature
+
     Feature: Feature 01
 
 	Scenario: Successful Login with Valid Credentials
@@ -155,10 +166,11 @@ describe('Feature:  Test Feature', function () {
 			| user1    | pass123  |
 			| admin    | admin123 |
 			| guest    | guest123 |
-    ``` 
-    * ``Feature 01.feature`` output 
+```    
+   
+``Feature 01.feature`` output
 
-    ```js
+```js
     const { mocha } = require('mocha');
     const { chai } = require('chai');
 
@@ -201,9 +213,11 @@ describe('Feature:  Test Feature', function () {
       });
     });
 
-    ```
-    * ``Feature 02.feature`` content:
-    ```feature
+```
+
+``Feature 02`` content
+
+```feature
     Feature: Feature 02
 
 	Scenario Outline: Addition and Subtraction
@@ -223,9 +237,11 @@ describe('Feature:  Test Feature', function () {
     When the user adds a "T-shirt" to the cart
     And the user adds a "Jeans" to the cart
     Then the cart should contain 2 items
-    ```
-   * ``Feature 02.feature`` output
-   ```js
+```
+    
+``Feature 02.feature`` output
+   
+```js
     const { mocha } = require('mocha');
     const { chai } = require('chai');
 
@@ -268,9 +284,10 @@ describe('Feature:  Test Feature', function () {
         };
       });
     });
-    
-   ```  
+
+```
 
 ## Suggestions, Bugs
+
 To report any bugs or provide suggestions please open an issue:
 Github Repo: [Mocha-StepDefinition-Generator](https://github.com/Elie-A/Mocha-StepDefinition-Generator)
