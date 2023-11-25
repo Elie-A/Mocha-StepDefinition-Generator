@@ -22,3 +22,13 @@ Feature: Test Feature
         And user validates the amount
         * user validates the 10 percent taxes
         * user pays the requested amount
+
+    Scenario Outline: Issue Fix
+        Given "user1" is on the "test" page
+        When "<value>" is "<tested>"
+        And 123 is added
+        Then "<validation>" is expected
+        Examples:
+            | value | tested | validation |
+            | v1    | true   | false      |
+            | v2    | false  | true       |      
