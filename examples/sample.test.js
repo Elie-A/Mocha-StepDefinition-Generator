@@ -17,6 +17,9 @@ describe('Feature:  Test Feature', function () {
 
     const data = [
       {
+        key1: 'Products',
+      },
+      {
         sort: 'Name (A to Z)',
         order: 'ASC',
       },
@@ -49,5 +52,34 @@ describe('Feature:  Test Feature', function () {
       key3: 'invoice_',
       key4: 10,
     };
+  });
+
+  it('Scenario Outline: Issue Fix', async () => {
+    //Given "user1" is on the "test" page
+    //When "<value>" is "<tested>"
+    //And 123 is added
+    //Then "<validation>" is expected
+
+    const data = [
+      {
+        key1: 'user1',
+      },
+      {
+        key2: 'test',
+      },
+      {
+        key3: '123',
+      },
+      {
+        value: 'v1',
+        tested: 'true',
+        validation: 'false',
+      },
+      {
+        value: 'v2',
+        tested: 'false',
+        validation: 'true',
+      },
+    ];
   });
 });

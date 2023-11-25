@@ -170,7 +170,11 @@ function parseFeatureLine(line) {
         } else if(stepMatch && isInsideScenarioOutlineBlock) {
             let stepText = stepMatch[0];
             scenario_outline_model.scenario_outline_steps.push(stepText);
-        }else if (!examplesMatch) {
+            paramMatch = stepText.match(paramPattern);
+            if(paramMatch && !paramMatch.some(item => item.includes("<"))){
+                tempData.push(...paramMatch);
+            }
+        } else if (!examplesMatch) {
             if (line.startsWith('\|') && !readHeaders) {
                 scenario_outline_model.scenario_outline_headers = line.split('|').map(element => element.trim()).filter(element => element !== '');
                 readHeaders = true;
@@ -245,14 +249,27 @@ function generateScenarioOutlineData(modelInstance) {
         }
         for (let i = 0; i < modelInstance.scenario_outline_data.length; i++) {
             const dataObject = {};
-            for (let j = 0; j < headers.length; j++) {
-                const header = headers[j];
-                dataObject[header] = modelInstance.scenario_outline_data[i][j];
+            if (Array.isArray(modelInstance.scenario_outline_data[i])) {
+                // Handle array data
+                for (let j = 0; j < headers.length; j++) {
+                    const header = headers[j];
+                    dataObject[header] = modelInstance.scenario_outline_data[i][j];
+                }
+            } else {
+                // Handle non-array data with dynamic keys
+                const data = modelInstance.scenario_outline_data[i];
+                const keyIndex = i + 1; // Dynamic key index
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const value = data;
+                        const cleanedValue = value.replace(/^"(.*)"$/, '$1');
+                        dataObject[`key${keyIndex}`] = cleanedValue;
+                    }
+                }
             }
             scenarioOutlineData.push(dataObject);
         }
     }
-
     return scenarioOutlineData;
 }
 
